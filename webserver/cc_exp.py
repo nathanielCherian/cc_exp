@@ -64,7 +64,7 @@ def run(bandwidth, delay, max_queue_size):
     client_cc = client.cmd("sysctl net.ipv4.tcp_congestion_control")
 
     info(f"\n\nSERVER CONGESTION CONTROL {server_cc}\nCLIENT CONGESTION CONTROL {client_cc}\n\n")
-    for i in range(1):
+    for i in range(10):
         run_exp("shakespeare.txt", f"{congestion_control}_{delay}ms_{bandwidth}bw_{max_queue_size}mqs_{i}", server, client)
 
     #CLI(net)

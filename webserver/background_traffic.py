@@ -22,10 +22,10 @@ setLogLevel('info')
 
 def run_exp(textfile, pcap_file, server, client):
     info("starting capture\n")
-    server.cmd(f"tshark -i {server.name}-eth0 -w /pcaps/{pcap_file}.pcap &")
+    server.cmd(f"tshark -i {server.name}-eth0 -w /pcaps/{pcap_file} &")
     time.sleep(1)
     info("downloading\n")
-    info(client.cmd(f"time curl {server.IP()}:8000/{textfile} > /dev/null"))
+    info(client.cmd(f"curl {server.IP()}:8000/{textfile} -o /dev/null"))
     time.sleep(2)
     info("ending capture\n")
     server.cmd("pkill -SIGINT tshark")
@@ -39,11 +39,11 @@ def run(bandwidth, delay, max_queue_size):
 
     info('*** Adding server and client container\n')
     server1 = net.addDocker('server1', 
-        ip='10.0.0.1', dcmd="python3 -m http.server", dimage="test_server:latest", 
+        ip='10.0.0.1', dcmd="python3 -m http.server --directory /pcaps/", dimage="test_server:latest", 
         volumes={mounted_folder: {"bind": "/pcaps/", "mode": "rw"}}, 
         privileged=True)
     server2 = net.addDocker('server2', 
-        ip='10.0.0.2', dcmd="python3 -m http.server", dimage="test_server:latest", 
+        ip='10.0.0.2', dcmd="python3 -m http.server --directory /pcaps/", dimage="test_server:latest", 
         volumes={mounted_folder: {"bind": "/pcaps/", "mode": "rw"}}, 
         privileged=True)
 
@@ -78,16 +78,16 @@ def run(bandwidth, delay, max_queue_size):
 
     info(f"\n\nSERVER CONGESTION CONTROL {server_cc}\nCLIENT CONGESTION CONTROL {client_cc}\n\n")
 
-    client1.cmd(f'curl {server2.IP()}:8000/large_files/10GB.py &')
-    time.sleep(0.5)
-    
-    run_exp('shakespeare.txt', 'test.pcap', server1, client1):
-
+    info("starting background traffic\n")
+    client2.cmd(f'curl {server2.IP()}:8000/large_files/large_file_10GB.dat > /dev/null &')
+    #client2.cmd(f"tshark -i client2-eth0 ")
+    #time.sleep(0.5)
+    #run_exp('large_files/large_file_1GB.dat', '1GB_file.pcap', server1, client1)
+    run_exp('large_files/shakespeare.txt', 'shakespeare.pcap', server1, client1)
     CLI(net)
-
 
     net.stop()
     info(f"finished capture for file with {bandwidth=} {delay=} {max_queue_size=}\n")
 
 if __name__ == "__main__":
-    run(50, 1, None)
+    run(1, 1, None)
