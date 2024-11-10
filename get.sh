@@ -1,8 +1,9 @@
 # Install containernet
-sudo apt-get install ansible
+sudo apt-get update
+sudo apt-get install ansible 
 git clone https://github.com/containernet/containernet.git
-sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
-sudo apt install python3.10-venv
+sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml 
+sudo apt install python3.10-venv 
 
 python -m venv venv
 source venv/bin/activate
