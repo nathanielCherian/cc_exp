@@ -22,13 +22,13 @@ setLogLevel('info')
 
 def run_exp(textfile, pcap_file, server, client):
     info("starting capture\n")
-    server.cmd(f"tshark -i server-eth0 -w /pcaps/{pcap_file}.pcap &")
+    server.cmd(f"tshark -i server-eth0 -w /mounted/pcaps/{pcap_file}.pcap &")
     time.sleep(1)
     info("downloading\n")
-    info(client.cmd(f"time curl 10.0.0.251:8000/{textfile} > /dev/null"))
+    info(client.cmd(f"time curl {server.IP()}:8000/{textfile} > /dev/null"))
     time.sleep(2)
     info("ending capture\n")
-    client.cmd("pkill -SIGINT tshark")
+    server.cmd("pkill -SIGINT tshark")
 
 
 def run(bandwidth, delay, max_queue_size):
@@ -64,13 +64,15 @@ def run(bandwidth, delay, max_queue_size):
     client_cc = client.cmd("sysctl net.ipv4.tcp_congestion_control")
 
     info(f"\n\nSERVER CONGESTION CONTROL {server_cc}\nCLIENT CONGESTION CONTROL {client_cc}\n\n")
-  
+
+
+    i = 0
     run_exp("shakespeare.txt", f"{congestion_control}_{delay}ms_{bandwidth}bw_{max_queue_size}mqs_{i}", server, client)
 
-    #CLI(net)
+    CLI(net)
 
     net.stop()
     info(f"finished capture for file with {bandwidth=} {delay=} {max_queue_size=}\n")
 
 if __name__ == "__main__":
-  
+    run(1, 10, 10)
