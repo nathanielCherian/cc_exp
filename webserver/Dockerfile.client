@@ -8,7 +8,12 @@ RUN apt-get update && apt-get install -y \
     tcpdump \
     ftp \ 
     iperf \
+    wget \
     curl
+
+#RUN add-apt-repository ppa:keithw/mahimahi
+#RUN apt-get update
+#RUN apt-get install mahimahi -y
 
 #WORKDIR /app
 #COPY . /app

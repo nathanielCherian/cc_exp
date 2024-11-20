@@ -50,21 +50,31 @@ def run(bandwidth, delay, max_queue_size):
     info('*** Setup network\n')
     s1 = net.addSwitch('s1')
     s2 = net.addSwitch('s2')
-    net.addLink(server, s1, params={"mtu": "1500"})
-    link = net.addLink(s1, s2, cls=TCLink, delay=f"{delay}ms", bw=bandwidth, max_queue_size=max_queue_size)
-    net.addLink(s2, client, params={"mtu": "1500"})
+    net.addLink(server, s1)
+    net.addLink(s1, s2, cls=TCLink, delay=f"10ms", bw=0.1)
+    net.addLink(s2, client)
+
     net.start()
 
     info('*** Starting to execute commands\n')
 
-    client.cmd('ifconfig client-eth0 mtu 1500 up')
-    server.cmd('ifconfig server-eth0 mtu 1500 up')
+    client.cmd('ip link set dev client-eth0 mtu 1500 up')
+    server.cmd('ip link set dev server-eth0 mtu 1500 up')
+
+
+    #s2.cmd('tc qdisc add dev s2-eth1 root handle 1: netem delay 10ms')  # Set delay to 10ms
+    s2.cmd('tc qdisc add dev s2-eth1 parent 1:1 handle 10: pfifo limit 10')
+
+    """
+    s1.cmd('ip link set dev s1-mtu 1500 up')
+    s2.cmd('ip link set dev server-eth0 mtu 1500 up')
+    
 
     server_cc = server.cmd("sysctl net.ipv4.tcp_congestion_control")
     client_cc = client.cmd("sysctl net.ipv4.tcp_congestion_control")
 
     info(f"\n\nSERVER CONGESTION CONTROL {server_cc}\nCLIENT CONGESTION CONTROL {client_cc}\n\n")
-
+    """
 
     i = 0
     run_exp("shakespeare.txt", f"{congestion_control}_{delay}ms_{bandwidth}bw_{max_queue_size}mqs_{i}", server, client)
