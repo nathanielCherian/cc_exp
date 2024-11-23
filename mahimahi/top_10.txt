@@ -1,0 +1,10 @@
+1 google.com https://accounts.google.com/ServiceLogin?hl=en&passive=true&continue=https://www.google.com/%3Fgws_rd%3Dssl
+2 youtube.com https://www.youtube.com/
+3 facebook.com https://ja-jp.facebook.com/
+4 baidu.com https://www.baidu.com/s?wd=%E5%A5%94%E9%A9%B0suv&rsf=62040005&rsp=8&f=1&oq=%E5%A5%94%E9%A9%B0%E5%85%A8%E7%90%83%E6%80%BB%E8%A3%81%E9%80%80%E4%BC%91&tn=SE_fengyunbangBD_x3kuz7ef&ie=utf-8&usm=2&rsv_pq=c61eee1c000041e4&rsv_t=d45dpRU%2B8rg%2FMIcsRj6i%2FXLrRh9XVv8UWZAOCO84rlxyGMUKMWEDMd1jt4TI6FjNG9gWbMk2YVdsqdl7QpRsVA&rqlang=cn&rs_src=0&rsv_pq=c61eee1c000041e4&rsv_t=d45dpRU%2B8rg%2FMIcsRj6i%2FXLrRh9XVv8UWZAOCO84rlxyGMUKMWEDMd1jt4TI6FjNG9gWbMk2YVdsqdl7QpRsVA
+5 wikipedia.org https://it.wikipedia.org/wiki/Stati_Uniti_d%27America
+6 tmall.com https://tarpa.tmall.com/wow/pegasus/subject/tarpa/mdlz/10395892?acm=lb-zebra-148799-693131.1003.4.5957355&scm=1003.4.lb-zebra-148799-693131.OTHER_2_5957355
+7 yahoo.com https://sg.yahoo.com/?p=us
+8 qq.com https://auto.qq.com/
+9 taobao.com https://ju.taobao.com/tg/today_items.htm?type=0&spm=1.1.10.0
+10 sohu.com http://tv.sohu.com/star/Mjg2Ml8/Pz8=.shtml
