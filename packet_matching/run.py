@@ -2,6 +2,23 @@ from mininet.net import Mininet
 from mininet.node import Controller, OVSKernelSwitch
 from mininet.link import TCLink
 from mininet.cli import CLI
+import time
+
+
+def configure_bottleneck(bottleneck_link):
+    print('*** Configuring TC settings on bottleneck link\n')
+    n1, n2 = bottleneck_link.intf1.node, bottleneck_link.intf2.node
+    n1_intf, n2_intf = bottleneck_link.intf1.name, bottleneck_link.intf2.name
+    n1.cmd('tc qdisc add dev %s root handle 1: netem delay 50ms' % n1_intf)
+    n1.cmd('tc qdisc add dev %s parent 1:1 handle 10: tbf rate 200kbit burst 1540 limit 20000' % n1_intf)
+    n1.cmd('tc qdisc add dev %s parent 10: bfifo limit 20000' % n1_intf)
+
+    n2.cmd('tc qdisc add dev %s root handle 1: netem delay 50ms' % n2_intf)
+    n2.cmd('tc qdisc add dev %s parent 1:1 handle 10: tbf rate 200kbit burst 1540 limit 20000' % n2_intf)
+    n2.cmd('tc qdisc add dev %s parent 10: bfifo limit 20000' % n2_intf)
+    
+    #print(bottleneck_link.intf1.node)
+    #print(bottleneck_link.intf2.node)
 
 def custom_topology():
     net = Mininet(controller=Controller, switch=OVSKernelSwitch, link=TCLink)
@@ -36,8 +53,31 @@ def custom_topology():
     print("*** Starting Network")
     net.start()
 
-    print("*** Running CLI")
-    CLI(net)
+    # Setting the MTU
+    for host in net.hosts + net.switches:
+        for intf in host.intfs.values():
+            if intf.name == "lo":
+                continue
+            print(intf.name)
+            host.cmd("ip link set %s mtu 1500" % intf.name)
+            #host.cmd("ethtool -K %s tso off gso off" % intf.name)
+
+    configure_bottleneck(link2)
+
+    print("starting tshark...")
+    s1.cmd("tshark -i s1-eth1 -w pcaps/eth1.pcap &")
+    s2.cmd("tshark -i s2-eth2 -w pcaps/eth2.pcap &")
+    
+    print("starting server...")
+    h2.cmd("python3 -m http.server &")
+    time.sleep(1)
+    print("starting curl")
+    h1.cmd("curl 10.0.0.2:8000/datafiles/file_1MB.txt > /dev/null")
+    print("done curl")
+    time.sleep(0.5)
+
+    #print("*** Running CLI")
+    #CLI(net)
 
     print("*** Stopping Network")
     net.stop()
