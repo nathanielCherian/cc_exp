@@ -1,0 +1,22 @@
+# 1. 
+# Generate the CA's private key (ca.key) - keep this VERY secure!
+openssl genrsa -out ca.key 4096
+
+# Generate the CA's self-signed certificate (ca.crt)
+openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt \
+    -subj "/C=US/ST=YourState/L=YourCity/O=YourOrganization/CN=My Root CA"
+
+# 2.
+# Generate the server's private key (server.key)
+openssl genrsa -out server.key 4096
+
+# Generate a Certificate Signing Request (CSR) for the server
+openssl req -new -key server.key -out server.csr \
+    -subj "/C=US/ST=YourState/L=YourCity/O=YourOrganization/CN=10.0.0.2"
+
+# Sign the CSR with the CA's private key to create the server certificate (server.crt)
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt \
+    -days 365 -sha256 -extfile <(echo "subjectAltName=IP:10.0.0.2") #Crucial for IP address
+
+# (Optional) Create a combined PEM file (server.pem) - sometimes needed
+cat server.crt server.key > server.pem
